@@ -2,19 +2,29 @@ version: 0.0
 os: linux
 files:
   - source: /target/SampleMavenTomcatApp.war
-    destination: /tmp/codedeploy-deployment-staging-area/
+    destination: /home/ec2-user/test
   - source: /scripts/configure_http_port.xsl
     destination: /tmp/codedeploy-deployment-staging-area/
+
+permissions:
+- object: /
+  pattern: "**"
+  owner: ec2-user
+  group: ec2-user
 hooks:
   ApplicationStop:
     - location: scripts/stop_application
       timeout: 300
+      runas: ec2-user
   BeforeInstall:
     - location: scripts/install_dependencies
       timeout: 300
+      runas: ec2-user
   ApplicationStart:
     - location: scripts/write_codedeploy_config.sh
     - location: scripts/start_application
       timeout: 300
+      runas: ec2-user
   ValidateService:
     - location: scripts/basic_health_check.sh
+      runas: ec2-user
